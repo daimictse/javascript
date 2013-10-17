@@ -1,60 +1,47 @@
-var BookList = function() {
-    booksRead = 0;
-    booksNotRead = 0;
-    bookShelf = [];
-    currentBook;
-    lastBook;
-    nextBook;
+BookList = function() {
+    this.booksRead = 0;
+    this.booksNotRead = 0;
+    this.bookShelf = [];
+    this.currentBook;
+    this.lastBook;
+    this.nextBook;
 
-    this.setNextBook = function(){
-        for (var i=0; i<bookShelf.length; i++) {
-            if (bookShelf[i].read == false) {
-                nextBook = bookShelf[i];
-                return nextBook;
+    this.nextBook = function(){
+         for (var i=0; i<this.bookShelf.length; i++) {
+            if (this.bookShelf[i].read === false) {
+                return this.bookShelf[i];
             }
         }
+        console.log("Finished reading all books");
+        return null;
     }
     this.setCurrentBook = function(Book){
-        currentBook = Book;
-
-        for (var i=0; i<bookShelf.length; i++) {
-            if (bookShelf[i] != Book && bookShelf[i].read == false) {
-                nextBook = bookShelf[i];
-            }
-        }
-        return currentBook;
+        this.currentBook = Book;
     }
-/*    this.currentBook = function() {
-        return this.bookShelf[booksRead];
+    this.getCurrentBook = function() {
+        return this.currentBook;
     }
-    this.lastBookRead = function() {
-        if (booksRead == 0) {
-            return null;
-        } else {
-            return this.bookShelf[booksRead-1];
-        }
-    }*/
     this.add = function(Book) {
         this.bookShelf.push(Book);
         this.booksNotRead++;
     }
-    this.finishCurrentBook = function() {
-        this.currentBook().read = true;
-        this.currentBook().readDate = new Date(Date.now());
+    this.finishCurrentBook = function(Book) {
+        Book.read = true;
+        Book.readDate = new Date(Date.now());
         this.booksRead++;
         this.booksNotRead--; 
-        this.lastBook = this.currentBook;
-        this.currentBook = this.nextBook;
-        this.nextBook = this.setNextBook();
-    }
+        this.lastBook = Book;
+        nextBook = this.nextBook();
+        this.setCurrentBook(nextBook);
+     }
 }
 
-var Book = function(Title, Genre, Author) {
+Book = function(Title, Genre, Author) {
     this.Title = Title;
     this.Genre = Genre;
     this.Author = Author;
-    read = false;
-    readDate;
+    this.read = false;
+    this.readDate;
 }
 
 bookList = new BookList();
@@ -66,4 +53,4 @@ bookList.add(book2);
 bookList.add(book3);
 bookList.setCurrentBook(book1);
 bookList.finishCurrentBook(book1);
-
+bookList.finishCurrentBook(bookList.getCurrentBook());

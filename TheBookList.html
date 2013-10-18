@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style type="text/css">
+        body{
+            font-family: helvetica, sans-serif;
+            background-color: rgba(148, 170, 170, 0.5);
+            width: 800px;
+            margin: 0 auto;
+        }
+        h1{
+            font-size: 2.5em;
+            color: white;
+            background-color: rgba(148, 170, 180, 0.5);
+            padding: 20px;
+            margin: 10px;
+            text-align: center;
+        }
+        ul, li{
+            list-style-type: none;
+            font-size: 1.05em;
+        }
+        img{
+            width: 200px;
+            height: 200px;
+            vertical-align: middle;
+            margin: 10px 20px 10px 10px;
+        }
+        .true{
+            font-style: italic;
+        }
+        nav {
+            padding: 10px;
+        }
+    </style>
+
+</head>
+<body>
+    <div id="bookList">
+
+    </div>
+    <nav>
+        <a href="#form">Create a Book</a>
+    </nav>
+   <form id="createBook">
+     <a name="form">
+        <h3>Create a Book:</h3>
+        <label for="Title">Title: </label>
+        <input type="text" name="Title" id="Title">
+        <br>
+        <label for="Genre">Genre: </label>
+        <input type="text" name="Genre" id="Genre">
+        <br>
+        <label for="Author">Author: </label>
+        <input type="text" name="Author" id="Author">
+        <br>
+        <label for="imgURL">Image URL: </label>
+        <input type="text" name="imgURL" id="imgURL">
+        <br>
+        <input type="submit" value="Create" id="createButton">
+    
+    </a></form>
+
+     <script>
+
+            BookList = function() {
+                this.booksRead = 0;
+                this.booksNotRead = 0;
+                this.bookShelf = [];
+                this.currentBook;
+                this.lastBook;
+                this.nextBook;
+
+                this.nextBook = function(){
+                     for (var i=0; i<this.bookShelf.length; i++) {
+                        if (this.bookShelf[i].read === false) {
+                            return this.bookShelf[i];
+                        }
+                    }
+                    console.log("Finished reading all books");
+                    return null;
+                }
+                this.setCurrentBook = function(Book){
+                    this.currentBook = Book;
+                }
+                this.getCurrentBook = function() {
+                    return this.currentBook;
+                }
+                this.add = function(Book) {
+                    this.bookShelf.push(Book);
+                    this.booksNotRead++;
+                }
+                this.finishCurrentBook = function(Book) {
+                    Book.read = true;
+                    Book.readDate = new Date(Date.now());
+                    this.booksRead++;
+                    this.booksNotRead--; 
+                    this.lastBook = Book;
+                    nextBook = this.nextBook();
+                    this.setCurrentBook(nextBook);
+                 }
+            }
+
+            Book = function(Title, Genre, Author, imgURL) {
+                this.Title = Title;
+                this.Genre = Genre;
+                this.Author = Author;
+                this.read = false;
+                this.readDate;
+                this.imgURL = imgURL || null;
+            }
+
+            bookList = new BookList();
+            book1 = new Book("Harry Potter", "Fantasy", "J.K. Rowling", "http://cdn-static.zdnet.com/i/story/61/18/026375/harry-potter.jpg");
+            book2 = new Book("Lord of the Rings", "Fantasy", "J.R.R. Tolkien", "http://www.vintage-books.com/shop_image/product/b302dd3e8cdbfadc962b1d194dfd9a78.gif");
+            book3 = new Book("Romeo and Juliet", "Love Story", "Shakespeare", "http://www.pagepulp.com/wp-content/218.jpg");
+            bookList.add(book1);
+            bookList.add(book2);
+            bookList.add(book3);
+            bookList.setCurrentBook(book1);
+            //bookList.finishCurrentBook(book1);
+            //bookList.finishCurrentBook(bookList.getCurrentBook());
+        
+
+        var form = document.getElementById("createBook");
+        var title = document.createElement('h1');
+        var titleText = document.createTextNode("My Book List");
+        title.appendChild(titleText);
+
+        document.body.insertBefore(title, form);
+        
+        var list = document.createElement('ul');
+
+        function addToBookList(book) {
+            var listItem = document.createElement('li');
+            listItem.className = book.read;
+            
+            var bookInfo = book.Title + " by "+ book.Author;
+            
+            var pText = document.createTextNode(bookInfo);
+            
+            var readButton = document.createElement('button');
+            readButton.id = bookList.bookShelf.indexOf(book);
+            readButton.innerHTML = "Mark as Read";
+            readButton.className = "readButton";
+            readButton.addEventListener('click', onReadClick);
+            // readButton.onClick = "return(this.id)"
+            
+            var imgTag = document.createElement('img');
+            imgTag.src = book.imgURL;
+            
+            listItem.appendChild(imgTag);
+            listItem.appendChild(pText);
+            listItem.appendChild(readButton);
+
+            list.appendChild(listItem)
+        }
+
+        for (var i=0; i<bookList.bookShelf.length; i++) {
+            addToBookList(bookList.bookShelf[i]);
+        }
+        document.body.insertBefore(list, form);
+
+        var createButton = document.getElementById('createButton');
+        function onCreateClick(event) {
+            var title = document.getElementById("Title").value;
+            var genre = document.getElementById("Genre").value;
+            var author = document.getElementById("Author").value;
+            var imgURL = document.getElementById("imgURL").value;
+            book = new Book(title, genre, author, imgURL);
+            bookList.add(book);
+            addToBookList(book);
+        }
+        createButton.addEventListener('click', onCreateClick);        
+
+
+ 
+        function onReadClick(event){
+            // var books = document.getElementByClassName("readButton");
+            // books.id
+            // alert(event);
+            var id = event.target.id;
+            bookList.finishCurrentBook(bookList.bookShelf[id])
+        };
+        
+      
+
+        </script>
+</body>
+   
+
+</html>
